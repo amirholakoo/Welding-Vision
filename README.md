@@ -185,9 +185,10 @@ This project is licensed under the MIT License - see the LICENSE file for deta
 🎥 Demo Video
 -------------
 
-[Add link to your demo video here]
+![DEMO_fast](https://github.com/user-attachments/assets/045cf7c6-b78c-4608-a0a3-584151ad5a27)
 
----
+-------------
+
 
 Made with ❤️ by Cursor + amirholakoo
 
