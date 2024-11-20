@@ -116,6 +116,9 @@ class WeldingSystem:
             max_gap = 0
             gap_location = None
             
+            # Debug visualization setup
+            debug_image = cv2.cvtColor(thresh, cv2.COLOR_GRAY2BGR)
+            
             for contour in contours:
                 area = cv2.contourArea(contour)
                 if area > 200:  # Minimum area threshold
@@ -142,6 +145,23 @@ class WeldingSystem:
                     if gap_size > max_gap:
                         max_gap = gap_size
                         gap_location = rect[0]
+                    
+                    # Draw detected area and surrounding box on the debug image
+                    cv2.drawContours(debug_image, [box], 0, (0, 255, 0), 2)
+                    cv2.putText(debug_image, 
+                               f'{gap_size:.1f}mm',
+                               (int(rect[0][0]), int(rect[0][1])),
+                               cv2.FONT_HERSHEY_SIMPLEX,
+                               0.5,
+                               (0, 0, 255),
+                               2)
+            
+            # Draw ROI box on original frame for better visualization of the analyzed region
+            frame_debug = frame.copy()
+            cv2.rectangle(frame_debug, 
+                         (0, self.roi_y_offset), 
+                         (width, self.roi_y_offset + self.roi_height), 
+                         (0, 255, 0), 2)
             
             # Display live preview with data overlay
             overlay_text = [
@@ -155,10 +175,11 @@ class WeldingSystem:
                 f'  >5mm: {self.gap_data_count[">5mm"]}'
             ]
             for i, text in enumerate(overlay_text):
-                cv2.putText(frame, text, (10, 30 + i * 25), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
+                cv2.putText(frame_debug, text, (10, 30 + i * 25), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
             
-            # Display only the live preview frame with overlays
-            cv2.imshow('Live Preview', frame)
+            # Display both the original frame with overlays and the processed debug image
+            cv2.imshow('Live Preview', frame_debug)
+            cv2.imshow('Gap Detection', debug_image)
             cv2.waitKey(1)
             
             return max_gap, gap_location
