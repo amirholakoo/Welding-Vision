@@ -37,11 +37,8 @@ class WeldingSystem:
         self.current_position = 0
         
         # Vision processing parameters
-        self.roi_y_offset = 400    # ROI offset from top of image
-        self.roi_height = 200      # Height of ROI
-        
-        # Data for testing purposes
-        self.gap_data_count = {"<2mm": 0, "2-3mm": 0, "3-4mm": 0, "4-5mm": 0, ">5mm": 0}
+        self.roi_x_offset = 600    # ROI offset from left of image for vertical orientation
+        self.roi_width = 200       # Width of ROI for vertical orientation
         
         # Create debug directory if it doesn't exist
         if not os.path.exists('debug'):
@@ -84,12 +81,9 @@ class WeldingSystem:
             frame = self.camera.capture_array()
             height, width = frame.shape[:2]
             
-            # Ensure ROI parameters are within frame bounds
-            self.roi_y_offset = min(self.roi_y_offset, height - self.roi_height)
-            roi = frame[self.roi_y_offset:self.roi_y_offset + self.roi_height, :]
-            
-            # Rotate ROI by 90 degrees for new orientation
-            roi = cv2.rotate(roi, cv2.ROTATE_90_CLOCKWISE)
+            # Ensure ROI parameters are within frame bounds for vertical ROI
+            self.roi_x_offset = min(self.roi_x_offset, width - self.roi_width)
+            roi = frame[:, self.roi_x_offset:self.roi_x_offset + self.roi_width]
             
             # Convert to grayscale and apply preprocessing
             gray = cv2.cvtColor(roi, cv2.COLOR_BGR2GRAY)
@@ -113,11 +107,18 @@ class WeldingSystem:
             # Find and filter contours
             contours, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
             
+            # Debug visualization
+            debug_image = cv2.cvtColor(thresh, cv2.COLOR_GRAY2BGR)
+            
+            # Draw ROI on original frame for visualization
+            frame_debug = frame.copy()
+            cv2.rectangle(frame_debug, 
+                         (self.roi_x_offset, 0), 
+                         (self.roi_x_offset + self.roi_width, height), 
+                         (0, 255, 0), 2)
+            
             max_gap = 0
             gap_location = None
-            
-            # Debug visualization setup
-            debug_image = cv2.cvtColor(thresh, cv2.COLOR_GRAY2BGR)
             
             for contour in contours:
                 area = cv2.contourArea(contour)
@@ -130,24 +131,14 @@ class WeldingSystem:
                     width = min(rect[1])
                     gap_size = width * 0.036  # Convert pixels to mm (adjust calibration)
                     
-                    # Update gap data count for statistics
-                    if gap_size < 2:
-                        self.gap_data_count["<2mm"] += 1
-                    elif 2 <= gap_size < 3:
-                        self.gap_data_count["2-3mm"] += 1
-                    elif 3 <= gap_size < 4:
-                        self.gap_data_count["3-4mm"] += 1
-                    elif 4 <= gap_size < 5:
-                        self.gap_data_count["4-5mm"] += 1
-                    else:
-                        self.gap_data_count[">5mm"] += 1
-                    
                     if gap_size > max_gap:
                         max_gap = gap_size
                         gap_location = rect[0]
                     
-                    # Draw detected area and surrounding box on the debug image
+                    # Draw rotated rectangle for visualization
                     cv2.drawContours(debug_image, [box], 0, (0, 255, 0), 2)
+                    
+                    # Add gap size text
                     cv2.putText(debug_image, 
                                f'{gap_size:.1f}mm',
                                (int(rect[0][0]), int(rect[0][1])),
@@ -156,31 +147,16 @@ class WeldingSystem:
                                (0, 0, 255),
                                2)
             
-            # Draw ROI box on original frame for better visualization of the analyzed region
-            frame_debug = frame.copy()
-            cv2.rectangle(frame_debug, 
-                         (0, self.roi_y_offset), 
-                         (width, self.roi_y_offset + self.roi_height), 
-                         (0, 255, 0), 2)
-            
-            # Display live preview with data overlay
-            overlay_text = [
-                f'Torch Position: {self.current_position}',
-                f'Filler Motor Status: {"ON" if GPIO.input(FILLER_EN_PIN) == GPIO.LOW else "OFF"}',
-                f'Gap Counts:',
-                f'  <2mm: {self.gap_data_count["<2mm"]}',
-                f'  2-3mm: {self.gap_data_count["2-3mm"]}',
-                f'  3-4mm: {self.gap_data_count["3-4mm"]}',
-                f'  4-5mm: {self.gap_data_count["4-5mm"]}',
-                f'  >5mm: {self.gap_data_count[">5mm"]}'
-            ]
-            for i, text in enumerate(overlay_text):
-                cv2.putText(frame_debug, text, (10, 30 + i * 25), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
-            
-            # Display both the original frame with overlays and the processed debug image
-            cv2.imshow('Live Preview', frame_debug)
+            # Display both original frame with ROI and processed image
+            cv2.imshow('Original with ROI', frame_debug)
             cv2.imshow('Gap Detection', debug_image)
             cv2.waitKey(1)
+            
+            # Save debug images periodically
+            timestamp = int(time())
+            if timestamp % 5 == 0:  # Save every 5 seconds
+                cv2.imwrite(f'debug/original_{timestamp}.jpg', frame_debug)
+                cv2.imwrite(f'debug/processed_{timestamp}.jpg', debug_image)
             
             return max_gap, gap_location
             
@@ -317,4 +293,3 @@ if __name__ == "__main__":
         if camera:
             camera.stop()
         GPIO.cleanup()
-
