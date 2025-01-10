@@ -22,12 +22,9 @@ The CNC shield typically does not break out SDA and SCL in a convenient location
 -   VL53L0X SCL → Arduino SCL (A5)
 
 **Testing the Sensor Alone:** Before integrating, let's just read distance from the VL53L0X:
+```
 
-cpp
-
-Copy code
-
-`#include <Wire.h>
+#include <Wire.h>
 #include "Adafruit_VL53L0X.h"  // Install Adafruit VL53L0X library
 
 Adafruit_VL53L0X lox = Adafruit_VL53L0X();
@@ -52,7 +49,8 @@ void loop() {
     Serial.println("Out of range");
   }
   delay(100);
-}`
+}
+```
 
 **What to expect:**\
 Open Serial Monitor, you should see distance measurements. If it works, we're good to integrate.
@@ -120,11 +118,8 @@ This way, setting D13 HIGH turns transistor on, pulling laser GND low and poweri
 
 **Turn Laser On After DC Starts and Off Before Going Home:** We'll just do:
 
-cpp
-
-Copy code
-
-`// Initialize laser pin as output
+```
+// Initialize laser pin as output
 int LASER_PIN = 13;
 
 void setup() {
@@ -139,7 +134,7 @@ digitalWrite(LASER_PIN, HIGH); // Laser ON
 digitalWrite(LASER_PIN, LOW); // Laser OFF`
 
 (If your laser's logic is reversed, just invert HIGH/LOW.)
-
+```
 * * * * *
 
 Integrated Code Sketch (Conceptual)
@@ -159,11 +154,8 @@ Below is a conceptual snippet integrating the distance control. We assume:
 -   In the loop where X and Z move, also read sensor and adjust Y.
 -   Add a small function `adjustYForDistance()` that checks the distance and moves Y a few steps if needed.
 
-cpp
-
-Copy code
-
-`#include <Wire.h>
+```
+#include <Wire.h>
 #include "Adafruit_VL53L0X.h"
 
 // Pins (same as before)
@@ -309,7 +301,9 @@ void adjustYForDistance() {
     }
     // If within 29-31mm, do nothing.
   }
-}`
+}
+
+```
 
 **What to Expect:**
 
