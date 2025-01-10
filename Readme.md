@@ -131,7 +131,7 @@ Below is an overview of the connections:
 3.  Clone this repository:
 
 
-    `git clone <repository-url>
+    `git clone https://github.com/amirholakoo/Welding-Vision.git
     cd <repository-folder>`
 
 #### On Arduino:
