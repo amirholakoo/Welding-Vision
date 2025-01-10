@@ -123,9 +123,6 @@ Below is an overview of the connections:
 1.  Install **Raspberry Pi OS**.
 2.  Install Python libraries:
 
-    bash
-
-    Copy code
 
     `sudo apt update
     sudo apt install python3-opencv
@@ -133,12 +130,9 @@ Below is an overview of the connections:
 
 3.  Clone this repository:
 
-    bash
 
-    Copy code
-
-    `git clone <repository-url>
-    cd <repository-folder>`
+    `git clone https://github.com/amirholakoo/Welding-Vision.git`
+    `cd <repository-folder>`
 
 #### On Arduino:
 
