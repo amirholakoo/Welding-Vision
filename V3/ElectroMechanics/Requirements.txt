@@ -1,1 +1,4 @@
-#Shalom
+opencv-python
+numpy
+matplotlib
+pyserial
