@@ -4,7 +4,7 @@ These commands will manage motor control, sensor monitoring, safety checks, and 
 
 | Command | Description |
 | ----- | ----- |
-| **START** | Starts the welding process. |
+| **START** | Starts the welding process. | Raspberry Pi → Arduino Mega |
 | **STOP** | Stops all motors and halts the process. |
 | **RESET** | Resets all motors and encoders to home positions. |
 | **POSITION** | Reports the current angle and encoder positions for all axes (R, X, Y, F). |
