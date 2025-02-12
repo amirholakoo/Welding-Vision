@@ -2,7 +2,9 @@ the Raspberry Pi is the Gateway.
 Errors that start with E0 are from Arduino Mega.
 Arduino Mega will first notify the gateway that an error exists then the error code will be sent if the gateway requests it by sending /ERROR_STATUS	command.
 Arduino Mega will send /ERROR_EXISTS to the gateway if an error exists.
-| E0001 | no feedback from X axis encoder|
+| Error | Description |
+|-----|-----|
+| **E0001** | no feedback from X axis encoder |
 | E0002 | no feedback from Y axis encoder|
 | E0003 | no feedback from R axis encoder|
 | E0004 | X axis micro-switch failure|
