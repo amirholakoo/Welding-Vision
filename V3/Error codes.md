@@ -9,7 +9,7 @@ Arduino Mega will send /ERROR_EXISTS to the gateway if an error exists.
 | E0003 | no feedback from R axis encoder|
 | E0004 | X axis micro-switch failure|
 | E0005 | Y axis micro-switch failure|
-| E0006 | unable to communicate with gateway (Raspberry Pi) | user will get notified of this failure by hearing a vibrating noise from all three stepper motors|
+| E0006 | unable to communicate with gateway (Raspberry Pi) user will get notified of this failure by hearing a vibrating noise from all three stepper motors|
 | E0007 | X axis encoder phase 1 failure|
 | E0008 | X axis encoder phase 2 failure|
 | E0009 | Y axis encoder phase 1 failure|
