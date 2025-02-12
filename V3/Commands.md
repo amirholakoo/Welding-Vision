@@ -4,10 +4,10 @@ These commands will manage motor control, sensor monitoring, safety checks, and 
 
 | Command | Description |
 | ----- | ----- |
-| **START** | Starts the welding process.  Raspberry Pi → Arduino Mega |
-| **STOP** | Stops all motors and halts the process. Raspberry Pi → Arduino Mega |
-| **RESET** | Resets all motors and encoders to home positions. Raspberry Pi → Arduino Mega |
-| **POSITION** | Reports the current angle and encoder positions for all axes (R, X, Y, F).  |
+| **START** | Starts the welding process.|
+| **STOP** | Stops all motors and halts the process.|
+| **RESET** | Resets all motors and encoders to home positions.|
+| **POSITION** | Reports the current angle and encoder positions for all axes (R, X, Y, F).|
 | **MOVE\_X:x** | Moves the X-axis to position `x` (steps). |
 | **MOVE\_Y:y** | Moves the Y-axis to position `y` (steps). |
 | **ROTATE\_R:a** | Rotates the pipe to angle `a` degrees. |
